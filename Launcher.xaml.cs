@@ -16,13 +16,20 @@ using System.Windows.Shapes;
 namespace AlmeticaLauncher
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for Launcher.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Launcher : Window
     {
-        public MainWindow()
+        public Launcher()
         {
             InitializeComponent();
+            // Read config file and load content
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO start Launcher thread and listen to incomming events
+            // Freeze the form until TERA exists
         }
     }
 }

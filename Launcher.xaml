@@ -1,0 +1,16 @@
+﻿<Window x:Name="Launcher_Window" x:Class="AlmeticaLauncher.Launcher"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AlmeticaLauncher"
+        mc:Ignorable="d"
+        Title="Almetica Launcher" Height="160" Width="500">
+    <Grid Margin="5,5,5,5">
+        <TextBox x:Name="AccountNameBox" HorizontalAlignment="Left" Margin="136,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300"/>
+        <PasswordBox x:Name="PasswordBox" HorizontalAlignment="Left" Margin="136,40,0,0" VerticalAlignment="Top" Width="300"/>
+        <Label x:Name="AccountNameLabel" Content="Account name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="PasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="StartButton" Content="Start Client" HorizontalAlignment="Center" Margin="0,79,0,0" VerticalAlignment="Top" Click="Button_Click" Width="100"/>
+    </Grid>
+</Window>
