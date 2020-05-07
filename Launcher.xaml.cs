@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace AlmeticaLauncher
 {
-    /// <summary>
-    /// Interaction logic for Launcher.xaml
-    /// </summary>
     public partial class Launcher : Window
     {
         public Launcher()
