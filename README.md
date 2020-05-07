@@ -9,23 +9,38 @@ It's main purpose serves as the launcher when using the custom server implementa
 
 ## Requirements
 
-Visual Studio 2019 Community Edition+. Written in .NET CORE C#.
+Visual Studio 2019 Community Edition+. Written in .NET Core C#.
+
+## Building
+
+This is a standard .NET Core project. The single file executable creation is enabled by default, so
+you should use a publish executable. The 32bit client of TERA needs a 32bit launcher.
+The 64bit client of TERA will need a 64bit launcher later on.
+
+The builds that we distribute are self contained.
 
 ## Configuration
 
 Configure the launcher with the help of the provided configuration file
-(configure.json). 
+(Configuration.json). 
 
 You need to set at least the address of the server and may optionally set the
 standard username and password to use (for development).
 
+Possible values for the language are:
+ - EUR = English with the EU client
+ - USA = English with the US client
+ - FRA = French with the EU client
+ - GER = German with the EU client
+
 ## Running
 
-Copy the following files into the client folder (the folder with the Binares,
+Copy the following file into the client folder (the folder with the Binares,
 Engine and S1Game folder as well as the version.txt/ini file):
 
  - AlmeticaLauncher.exe
- - 
+
+The file is including all dependencies.
 
 ## Protocol Description
 

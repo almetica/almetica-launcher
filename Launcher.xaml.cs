@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,13 +25,30 @@ namespace AlmeticaLauncher
         public Launcher()
         {
             InitializeComponent();
-            // Read config file and load content
+
+            this.Configuration = JsonConvert.DeserializeObject<Configuration>(
+                File.ReadAllText(@"Configuration.json")
+            );
+            this.GameLauncher = new GameLauncher(this.Configuration);
+            AccountNameBox.Text = Configuration.DefaultAccount;
+            PasswordBox.Password = Configuration.DefaultPassword;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private Configuration Configuration { get; set; }
+        private GameLauncher GameLauncher { get; set; }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            // TODO start Launcher thread and listen to incomming events
-            // Freeze the form until TERA exists
+            AccountNameBox.IsEnabled = false;
+            PasswordBox.IsEnabled = false;
+            StartButton.IsEnabled = false;
+
+            await GameLauncher.LaunchGame(AccountNameBox.Text, PasswordBox.Password);
+
+            AccountNameBox.IsEnabled = true;
+            PasswordBox.IsEnabled = true;
+            StartButton.IsEnabled = true;
+
         }
     }
 }

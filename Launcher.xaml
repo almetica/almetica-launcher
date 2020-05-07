@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AlmeticaLauncher"
         mc:Ignorable="d"
-        Title="Almetica Launcher" Height="160" Width="500">
+        Title="Almetica Launcher"
+        Height="160" Width="500"
+        ResizeMode="NoResize">
     <Grid Margin="5,5,5,5">
         <TextBox x:Name="AccountNameBox" HorizontalAlignment="Left" Margin="136,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300"/>
         <PasswordBox x:Name="PasswordBox" HorizontalAlignment="Left" Margin="136,40,0,0" VerticalAlignment="Top" Width="300"/>

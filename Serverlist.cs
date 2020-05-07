@@ -10,7 +10,6 @@
 using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
-using scg = global::System.Collections.Generic;
 namespace AlmeticaLauncher {
 
   /// <summary>Holder for reflection information generated from serverlist.proto</summary>
