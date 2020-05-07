@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+package MockTeraClient;
+
+message ServerList {
+	message Server {
+		sfixed32 id = 1;
+		bytes category = 2; // PVP / PVE
+		bytes rawname = 3;
+		bytes name = 4;
+		bytes crowdness = 5;
+		bytes open = 6;
+		sfixed32 ip = 7; // IPV4 address encoded as int32
+		sfixed32 port = 8;
+		sfixed32 lang = 9;
+		bytes popup = 10;
+	}
+	repeated Server servers = 1;
+	sfixed32 LastPlayedId = 2;
+	sfixed32 unknwn2 = 3;
+}
