@@ -83,6 +83,8 @@ client in suspended mode, create the expected named pipe and then resume the mai
 TERA client to get it connected to the pipe. This is needed, since the pipe name contains the PID
 of the TERA client. The pipe name is: ```\\.\pipe\$PIDcout```.
 
+The exact function of the pipe is yet unknown
+
 ## License
 
 Licensed under GPL version 3.
