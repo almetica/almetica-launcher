@@ -2,9 +2,8 @@
 
 namespace AlmeticaLauncher
 {
-    class ResponseAuth
-    { 
-        [JsonProperty("ticket")]
-        public string Ticket { get; set; }
+    internal class ResponseAuth
+    {
+        [JsonProperty("ticket")] public string Ticket { get; set; }
     }
 }

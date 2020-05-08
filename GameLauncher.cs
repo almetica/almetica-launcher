@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
@@ -7,21 +6,23 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf;
 
 namespace AlmeticaLauncher
 {
-    class GameLauncher
+    internal class GameLauncher
     {
+        private readonly AlmeticaClient _client;
+
+        private readonly Configuration _configuration;
+
         public GameLauncher(Configuration config)
         {
-            this.Configuration = config;
-            this.Client = new AlmeticaClient(config.ServerBaseAddress);
+            _configuration = config;
+            _client = new AlmeticaClient(config.ServerBaseAddress);
         }
 
-        private readonly Configuration Configuration;
-        private readonly AlmeticaClient Client;
-
-        // TODO debug mode in a seperate debug window
+        // TODO debug mode in a separate debug window
         public async Task LaunchGame(string accountName, string password, CancellationToken cancellationToken = default)
         {
             var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -36,39 +37,40 @@ namespace AlmeticaLauncher
                 const string launcherWindowsTitle = "LAUNCHER_WINDOW";
                 var wndClass = new WNDCLASSEX
                 {
-                    cbSize = (uint)Marshal.SizeOf<WNDCLASSEX>(),
+                    cbSize = (uint) Marshal.SizeOf<WNDCLASSEX>(),
                     lpszClassName = launcherClassName,
                     lpfnWndProc = WndProc
                 };
                 RegisterClassEx(ref wndClass);
-                var windowHandle = CreateWindowEx(0, launcherClassName, launcherWindowsTitle, 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+                var windowHandle = CreateWindowEx(0, launcherClassName, launcherWindowsTitle, 0, 0, 0, 0, 0,
+                    IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
-                var pid = Process.Start("Binaries\\TERA.exe", string.Format("-LANGUAGEEXT={0}", this.Configuration.Language));
+                var pid = Process.Start("Binaries\\TERA.exe",
+                    $"-LANGUAGEEXT={_configuration.Language}");
 
                 // Create and listen to the secret named pipe
                 Task.Run(() =>
                 {
-                    var pipename = string.Format("{0}cout", pid.Id);
+                    var pipename = $"{pid.Id}cout";
 
-                    using NamedPipeServerStream pipeServer = new NamedPipeServerStream(pipename, PipeDirection.In);
+                    using var pipeServer = new NamedPipeServerStream(pipename, PipeDirection.In);
                     // Wait for a client to connect
                     pipeServer.WaitForConnection();
-                    Debug.WriteLine("TERA connected to the named pipe {0}", pipename);
+                    Debug.WriteLine($"TERA connected to the named pipe {pipename}", "PIPE");
                     try
                     {
-                        using (StreamReader sr = new StreamReader(pipeServer))
+                        using var sr = new StreamReader(pipeServer);
+                        string temp;
+                        while ((temp = sr.ReadLine()) != null)
                         {
-                            string temp;
-                            while ((temp = sr.ReadLine()) != null)
-                            {
-                                Debug.WriteLine("PIPE MESSAGE: {0}", temp);
-                            }
+                            Debug.WriteLine($"Message: {temp}", "PIPE");
                         }
+
                     }
                     // Catch the IOException that is raised if the pipe is broken or disconnected
                     catch (IOException e)
                     {
-                        Debug.WriteLine("PIPE ERROR: {0}", e.Message);
+                        Debug.WriteLine($"Error: {e}", "PIPE");
                     }
                 }, cancellationToken);
 
@@ -88,31 +90,31 @@ namespace AlmeticaLauncher
                 if (msg != wmCopyData) return DefWindowProc(hWnd, msg, wParam, lParam);
 
                 var copyData = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
-                var event_id = copyData.dwData;
+                var eventId = copyData.dwData;
 
                 if (copyData.cbData > 0)
                 {
-                    byte[] managedArray = new byte[copyData.cbData];
+                    var managedArray = new byte[copyData.cbData];
                     Marshal.Copy(copyData.lpData, managedArray, 0, copyData.cbData);
                     var hex = BitConverter.ToString(managedArray).Replace("-", "");
-                    Debug.WriteLine("LAUNCHER WM_COPYDATA: dwData: {0}, len: {1}, data: {2}", event_id, copyData.cbData, hex);
+                    Debug.WriteLine($"dwData: {eventId}, len: {copyData.cbData}, data: {hex}", "WND_PROC");
                 }
                 else
                 {
-                    Debug.WriteLine("LAUNCHER WM_COPYDATA: dwData: {0}, len: {1}", event_id, copyData.cbData);
+                    Debug.WriteLine($"dwData: {eventId}, len: {copyData.cbData}", "WND_PROC");
                 }
 
                 // Handle requests by the game client
-                switch (event_id)
+                switch (eventId)
                 {
                     case 1:
                         SendResponseMessage(wParam, hWnd, 2, Encoding.Unicode.GetBytes(accountName));
                         break;
                     case 3:
-                        SendResponseMessage(wParam, hWnd, 4, this.Client.GetTicket(accountName, password));
+                        SendResponseMessage(wParam, hWnd, 4, _client.GetTicket(accountName, password));
                         break;
                     case 5:
-                        SendResponseMessage(wParam, hWnd, 6, this.Client.GetServerList().ToByteArray());
+                        SendResponseMessage(wParam, hWnd, 6, _client.GetServerList().ToByteArray());
                         break;
                 }
 
@@ -120,26 +122,26 @@ namespace AlmeticaLauncher
             }
         }
 
-        private void SendResponseMessage(IntPtr recipient, IntPtr sender, int game_event, byte[] payload)
+        private void SendResponseMessage(IntPtr recipient, IntPtr sender, int gameEvent, byte[] payload)
         {
             var hex = BitConverter.ToString(payload).Replace("-", "");
-            Debug.WriteLine("Sending event {0} with data {1} to {2}", game_event,  recipient, hex);
+            Debug.WriteLine($"Sending event {gameEvent} to {recipient} with data {hex}", "WM_COPYDATA");
 
-            IntPtr payload_pointer = Marshal.AllocHGlobal(payload.Length);
-            Marshal.Copy(payload, 0, payload_pointer, payload.Length);
+            var payloadPointer = Marshal.AllocHGlobal(payload.Length);
+            Marshal.Copy(payload, 0, payloadPointer, payload.Length);
 
             var response = new COPYDATASTRUCT
             {
-                dwData = game_event,
+                dwData = gameEvent,
                 cbData = payload.Length,
-                lpData = payload_pointer,
+                lpData = payloadPointer
             };
 
             var outgoingDataPointer = Marshal.AllocHGlobal(Marshal.SizeOf<COPYDATASTRUCT>());
             Marshal.StructureToPtr(response, outgoingDataPointer, false);
             SendMessage(recipient, 0x4a, sender, outgoingDataPointer);
             Marshal.FreeHGlobal(outgoingDataPointer);
-            Marshal.FreeHGlobal(payload_pointer);
+            Marshal.FreeHGlobal(payloadPointer);
         }
 
         #region WIN32_API
@@ -172,7 +174,7 @@ namespace AlmeticaLauncher
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern int GetLastError();
+        private static extern int GetLastError();
 
         [DllImport("user32.dll")]
         private static extern bool UnregisterClass(string lpClassName, IntPtr hInstance);

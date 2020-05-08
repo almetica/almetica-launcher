@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:AlmeticaLauncher"
              StartupUri="Launcher.xaml">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

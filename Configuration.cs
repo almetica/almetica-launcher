@@ -1,20 +1,16 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace AlmeticaLauncher
 {
     public class Configuration
     {
-        [JsonProperty("ServerBaseAddress")]
-        public Uri ServerBaseAddress;
+        [JsonProperty("DefaultAccount")] public string DefaultAccount;
 
-        [JsonProperty("DefaultAccount")]
-        public string DefaultAccount;
+        [JsonProperty("DefaultPassword")] public string DefaultPassword;
 
-        [JsonProperty("DefaultPassword")]
-        public string DefaultPassword;
+        [JsonProperty("Language")] public string Language;
 
-        [JsonProperty("Language")]
-        public string Language;
+        [JsonProperty("ServerBaseAddress")] public Uri ServerBaseAddress;
     }
 }

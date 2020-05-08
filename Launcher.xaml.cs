@@ -1,19 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Newtonsoft.Json;
 
 namespace AlmeticaLauncher
 {
@@ -23,16 +10,16 @@ namespace AlmeticaLauncher
         {
             InitializeComponent();
 
-            this.Configuration = JsonConvert.DeserializeObject<Configuration>(
+            Configuration = JsonConvert.DeserializeObject<Configuration>(
                 File.ReadAllText(@"Configuration.json")
             );
-            this.GameLauncher = new GameLauncher(this.Configuration);
+            GameLauncher = new GameLauncher(Configuration);
             AccountNameBox.Text = Configuration.DefaultAccount;
             PasswordBox.Password = Configuration.DefaultPassword;
         }
 
-        private Configuration Configuration { get; set; }
-        private GameLauncher GameLauncher { get; set; }
+        private Configuration Configuration { get; }
+        private GameLauncher GameLauncher { get; }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -45,7 +32,6 @@ namespace AlmeticaLauncher
             AccountNameBox.IsEnabled = true;
             PasswordBox.IsEnabled = true;
             StartButton.IsEnabled = true;
-
         }
     }
 }

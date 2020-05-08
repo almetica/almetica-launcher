@@ -9,10 +9,15 @@
         Height="160" Width="500"
         ResizeMode="NoResize">
     <Grid Margin="5,5,5,5">
-        <TextBox x:Name="AccountNameBox" HorizontalAlignment="Left" Margin="136,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300"/>
-        <PasswordBox x:Name="PasswordBox" HorizontalAlignment="Left" Margin="136,40,0,0" VerticalAlignment="Top" Width="300"/>
-        <Label x:Name="AccountNameLabel" Content="Account name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="PasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="StartButton" Content="Start Client" HorizontalAlignment="Center" Margin="0,79,0,0" VerticalAlignment="Top" Click="Button_Click" Width="100"/>
+        <TextBox x:Name="AccountNameBox" HorizontalAlignment="Left" Margin="136,14,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="300" />
+        <PasswordBox x:Name="PasswordBox" HorizontalAlignment="Left" Margin="136,40,0,0" VerticalAlignment="Top"
+                     Width="300" />
+        <Label x:Name="AccountNameLabel" Content="Account name" HorizontalAlignment="Left" Margin="10,10,0,0"
+               VerticalAlignment="Top" />
+        <Label x:Name="PasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="10,36,0,0"
+               VerticalAlignment="Top" />
+        <Button x:Name="StartButton" Content="Start Client" HorizontalAlignment="Center" Margin="0,79,0,0"
+                VerticalAlignment="Top" Click="Button_Click" Width="100" />
     </Grid>
 </Window>

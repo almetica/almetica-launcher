@@ -1,26 +1,27 @@
-﻿using Google.Protobuf;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Protobuf;
+using Newtonsoft.Json;
 using static AlmeticaLauncher.ServerList.Types;
 
 namespace AlmeticaLauncher
 {
-    class AlmeticaClient
+    internal class AlmeticaClient
     {
+        private readonly Uri _serverBasePath;
+
         public AlmeticaClient(Uri serverBasePath)
         {
-            ServerBasePath = serverBasePath;
+            _serverBasePath = serverBasePath;
         }
 
-        private Uri ServerBasePath;
-        public Uri ServerListUri => new Uri(this.ServerBasePath, "server/list");
-        private Uri AuthUri => new Uri(this.ServerBasePath, "auth");
+        Uri ServerListUri => new Uri(_serverBasePath, "server/list");
+        Uri AuthUri => new Uri(_serverBasePath, "auth");
 
         public byte[] GetTicket(string accountName, string password)
         {
@@ -34,45 +35,44 @@ namespace AlmeticaLauncher
 
         private async Task<byte[]> GetTicketAsync(string accountName, string password)
         {
-            using (var content = new FormUrlEncodedContent(new Dictionary<string, string> {
-                {"accountname", accountName},
-                {"password", password},
-            }))
+            using var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                using HttpClient Client = new HttpClient();
-                var response = await Client.PostAsync(AuthUri, content);
-                var authenticationResponse = await response.Content.ReadAsStringAsync();
-                var auth = JsonConvert.DeserializeObject<ResponseAuth>(authenticationResponse);
-                return System.Convert.FromBase64String(auth.Ticket);
-            }
+                {"accountname", accountName},
+                {"password", password}
+            });
+            using var client = new HttpClient();
+            var response = await client.PostAsync(AuthUri, content);
+            var authenticationResponse = await response.Content.ReadAsStringAsync();
+            var auth = JsonConvert.DeserializeObject<ResponseAuth>(authenticationResponse);
+            return Convert.FromBase64String(auth.Ticket);
         }
 
         private async Task<ServerList> GetServerListAsync()
         {
-            using HttpClient Client = new HttpClient();
-            var response = await Client.GetAsync(ServerListUri);
+            using var client = new HttpClient();
+            var response = await client.GetAsync(ServerListUri);
             var serverListResponse = await response.Content.ReadAsStringAsync();
-            var server_list = JsonConvert.DeserializeObject<ResponseServerList>(serverListResponse);
+            var serverList = JsonConvert.DeserializeObject<ResponseServerList>(serverListResponse);
 
-            var game_compatible_server_list = server_list.Servers.Select(x => new Server() {
+            var gameCompatibleServerList = serverList.Servers.Select(x => new Server
+            {
                 Id = x.Id,
                 Category = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Category)),
                 Rawname = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Rawname)),
                 Name = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Name)),
                 Crowdness = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Crowdness)),
                 Open = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Open)),
-                Ip = this.IpV4ToInt(x.Ip),
+                Ip = IpV4ToInt(x.Ip),
                 Port = x.Port,
                 Lang = x.Lang,
-                Popup = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Popup)),
-
+                Popup = ByteString.CopyFrom(Encoding.Unicode.GetBytes(x.Popup))
             }).ToList();
 
-            return new ServerList()
+            return new ServerList
             {
-                Servers = { game_compatible_server_list },
+                Servers = {gameCompatibleServerList},
                 LastPlayedId = 1,
-                Unknwn = 0,
+                Unknwn = 0
             };
         }
 
@@ -80,13 +80,14 @@ namespace AlmeticaLauncher
         {
             var address = IPAddress.Parse(s);
             var ipv4 = address.MapToIPv4();
-            var address_bytes = ipv4.GetAddressBytes();
-            
+            var addressBytes = ipv4.GetAddressBytes();
+
             if (BitConverter.IsLittleEndian)
-                Array.Reverse(address_bytes);
+            {
+                Array.Reverse(addressBytes);
+            }
 
-            return BitConverter.ToInt32(address_bytes, 0);
+            return BitConverter.ToInt32(addressBytes, 0);
         }
-
     }
 }
