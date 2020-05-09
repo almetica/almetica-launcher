@@ -3,7 +3,7 @@
 [![Gitter](https://badges.gitter.im/almetica-server/community.svg)](https://gitter.im/almetica-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This is a custom client launcher for the MMORPG TERA that interfaces directly with the client.
-It re-implementing the protocol used by the Tl.exe and the EME launcher.
+It's re-implementing the protocol used by the Tl.exe and the EME launcher.
 
 It's main purpose serves as the launcher when using the custom server implementation Almetica.
 
